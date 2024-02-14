@@ -1,3 +1,4 @@
+using AndroidX.Lifecycle;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 using static Android.Icu.Text.Transliterator;
@@ -6,45 +7,86 @@ namespace PM02P012024.Views;
 
 public partial class PageMap : ContentPage
 {
-	public PageMap()
+    public PinViewModel ViewModel { get; set; }
+
+    public PageMap()
 	{
 		InitializeComponent();
-        
-      
+        ViewModel = new PinViewModel();
+        BindingContext = ViewModel;
+
     }
 
     private void btnProcesar_Clicked(object sender, EventArgs e)
     {
-
-        //Si el Campo es Nulo o esta en blanco
+        // Verificar si hay campos nulos o en blancos
         if (string.IsNullOrWhiteSpace(Latitud.Text) || string.IsNullOrWhiteSpace(Longitud.Text))
         {
             DisplayAlert("Error", "Por favor, ingrese valores para la latitud y la longitud.", "OK");
             return;
         }
 
-        //Si hay alguna letras 
+        // Aviso De que solo acepta datos numericos
         if (!double.TryParse(Latitud.Text, out double latitud) || !double.TryParse(Longitud.Text, out double longitud))
         {
             DisplayAlert("Error", "Los valores ingresados para la latitud y la longitud deben ser numéricos.", "OK");
             return;
         }
 
-        // Si todo esta bien guarda los valores y los muestra en un pin
-        var location = new Location(latitud, longitud);
+        // Actualizar la ubicación del pin en el modelo de vista
+        ViewModel.UpdateLocation(latitud, longitud);
 
         // Mover el mapa a la ubicación especificada
-        Mapa.MoveToRegion(MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1)));
+        Mapa.MoveToRegion(MapSpan.FromCenterAndRadius(ViewModel.Location, Distance.FromKilometers(1)));
 
-        // Agregar un pin en la ubicación especificada
-        var pin = new Pin
+        // Limpiar los pines existentes y agregar el nuevo pin
+        Mapa.Pins.Clear();
+        Mapa.Pins.Add(new Pin
         {
             Label = "Mi Marcador",
-            Location = location
-        };
-        Mapa.Pins.Clear(); // Limpiar los pines existentes
-        Mapa.Pins.Add(pin);
+            Location = ViewModel.Location
+        });
     }
 }
+
+public class PinViewModel : BindableObject
+{
+    private double _latitude;
+    public double Latitude
+    {
+        get { return _latitude; }
+        set
+        {
+            if (_latitude != value)
+            {
+                _latitude = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private double _longitude;
+    public double Longitude
+    {
+        get { return _longitude; }
+        set
+        {
+            if (_longitude != value)
+            {
+                _longitude = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public Location Location => new Location(Latitude, Longitude);
+
+    public void UpdateLocation(double latitude, double longitude)
+    {
+        Latitude = latitude;
+        Longitude = longitude;
+    }
+}
+
 
 
