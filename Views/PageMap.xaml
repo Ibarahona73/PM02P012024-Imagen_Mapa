@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PM02P012024.Views.PageMap"
+             xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+             Title="PageMap">
+    
+    
+    <StackLayout>
+        <maps:Map x:Name="Mapa" MapType="Hybrid" />
+
+        <Entry  x:Name="Latitud" Placeholder="Ingresar una Latitud" Keyboard="Numeric"/>
+
+        <Entry  x:Name="Longitud" Placeholder="Ingresar una Longitud" Keyboard="Numeric"/>
+
+        <Button x:Name="btnProcesar" Text="Procesar" Clicked="btnProcesar_Clicked"/>
+
+    </StackLayout>
+
+
+</ContentPage>
